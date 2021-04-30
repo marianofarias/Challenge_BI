@@ -112,30 +112,29 @@ BEGIN
 	LEFT JOIN tbl_publish_status as PublishStatus on PublishStatus.publish_status_id= Item.publish_status_fk;
 
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'tbl_resumen_diario') THEN
-CREATE TABLE `der_challengemeli`.`tbl_resumen_diario` (
-`resumen_id` INT NOT NULL,
-`fecha` date NOT NULL,
-`id_item` INT NOT NULL,
-
-`precio_item` INT NOT NULL,
-  `estado_item` VARCHAR(45) NOT NULL,
-	PRIMARY KEY (`resumen_id`));
+	CREATE TABLE `der_challengemeli`.`tbl_resumen_diario` (
+		`resumen_id` INT NOT NULL,
+		`fecha` date NOT NULL,
+		`id_item` INT NOT NULL,
+		`precio_item` INT NOT NULL,
+		`estado_item` VARCHAR(45) NOT NULL,
+		PRIMARY KEY (`resumen_id`)
+	);
 END IF;
 
 OPEN cursor1;
-
-FETCH cursor1 INTO _item_id, _precio, _estadoItem;
-
-IF _item_id IS NOT NULL THEN
-		INSERT INTO `der_challengemeli`.`tbl_resumen_diario` (`fecha`, `id_item`, `precio_item`, `estado_item`) 
-													VALUES ( CURRENT_DATE(), _item_id, _precio, _estadoItem);
-     END IF;
+	FETCH cursor1 INTO _item_id, _precio, _estadoItem;
+	IF _item_id IS NOT NULL THEN
+		INSERT INTO `der_challengemeli`.`tbl_resumen_diario` 
+			(`fecha`, `id_item`, `precio_item`, `estado_item`)
+			VALUES ( CURRENT_DATE(), _item_id, _precio, _estadoItem);
+	END IF;
 CLOSE cursor1;
 
 END$$
 
 DELIMITER ;
-;
+
 ```
 
 
