@@ -1,3 +1,4 @@
+# CHALLENGE BI
 
 En el presente repositorio se entrega la resolucion del challenge planteado para la validar aptitudes tecnicas relacionadas con el manejo de SQL.
 
