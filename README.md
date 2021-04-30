@@ -4,11 +4,17 @@ En el presente repositorio se entrega la resolucion del challenge planteado para
 
 Se uso **MySQL**, que es una base de datos relacional con licencia gratuita.
 
+#### Entregables:
+
+- [DER](https://www.google.com/)
+
+- [DDL](https://www.google.com/)
+
+- [Querys](https://www.google.com/)
+
 ## DER
 
 La primer parte del entregable es la creacion de un DER que va a servir para poder responder a preguntas, sobre diferentes casos en el negocio, que fueron enunciadas.
-
-Diagrama: [DER](https://www.google.com/)
 
 ### Cosas que me gustaria resaltar:
   - Agregue una constraint unique del campo "email" en Customer. 
