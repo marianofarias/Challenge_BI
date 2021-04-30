@@ -2,7 +2,7 @@
 
 En el presente repositorio se entrega la resolucion del challenge planteado para la validar aptitudes tecnicas relacionadas con el manejo de SQL.
 
-Se uso **MySQL**, que es una base de datos relacional con licencia gratuita.
+Se uso **MySQL**, que es una base de datos relacional con licencia gratuita. En un momento queria usar PosgresSQL pero no tiene Stored Procedures, sino que en su lugar se usan funciones que actuan de la misma forma, pero no me parecio una buena eleccion.
 
 #### Entregables:
 
@@ -15,6 +15,7 @@ Se uso **MySQL**, que es una base de datos relacional con licencia gratuita.
 ## DER
 
 La primer parte del entregable es la creacion de un DER que va a servir para poder responder a preguntas, sobre diferentes casos en el negocio, que fueron enunciadas.
+Use la herramienta MySql Workbrench ya que es gratuita y me parece muy completa.
 
 ### Cosas que me gustaria resaltar:
   - Agregue una constraint unique del campo "email" en Customer. 
