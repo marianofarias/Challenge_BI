@@ -25,21 +25,22 @@ Use la herramienta MySql Workbrench ya que es gratuita y me parece muy completa.
 1. Cantidad de usuarios donde su apellido comience con la letra ‘M’.
 ```
 SELECT
-COUNT(*)
+	COUNT(*)
 FROM
-der_challengemeli.tbl_customer
+	der_challengemeli.tbl_customer
 WHERE
-last_name like 'M%';
+	last_name like 'M%';
 ```
 3. Listado de los usuarios que cumplan años en el día de la fecha (hoy).
 ```
 SELECT
-CONCAT(first_name,' ',last_name) as Usuario,
-birth_date
+	CONCAT(first_name,' ',last_name) as Usuario,
+	birth_date as FechaNacimiento
 FROM
 der_challengemeli.tbl_customer
 WHERE
-DATE_FORMAT(birth_date,'%d/%m/%Y') =DATE_FORMAT(sysdate(),'%d/%m/%Y');
+	Month(birth_date)= Month(sysdate()) and
+	Day(birth_date)= Day(sysdate());
 ```
 5. Por día se necesita, cantidad de ventas realizadas, cantidad de productos vendidos
 y monto total transaccionado para el mes de Enero del 2020.
@@ -89,6 +90,53 @@ informado por la PK definida
   - Esta información nos va a permitir realizar análisis para entender el
 comportamiento de los diferentes Items (por ejemplo evolución de Precios,
 cantidad de Items activos).
+```
+USE `der_challengemeli`;
+DROP procedure IF EXISTS `SP_CreateTable`;
+
+USE `der_challengemeli`;
+DROP procedure IF EXISTS `der_challengemeli`.`SP_CreateTable`;
+;
+
+DELIMITER $$
+USE `der_challengemeli`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `SP_CreateTable`()
+BEGIN
+DECLARE _item_id  INT(11);
+DECLARE _precio  INT(11);
+DECLARE _estadoItem  varchar(100);
+
+DECLARE cursor1 CURSOR FOR
+SELECT 
+Item.item_id as c_item, Item.price as c_precio, PublishStatus.name as c_estadoItem
+FROM tbl_item as Item
+LEFT JOIN tbl_publish_status as PublishStatus on PublishStatus.publish_status_id= Item.publish_status_fk
+;
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'tbl_resumen_diario') THEN
+ CREATE TABLE `der_challengemeli`.`tbl_resumen_diario` (
+  `resumen_id` INT NOT NULL,
+  `fecha` date NOT NULL,
+  `id_item` INT NOT NULL,
+  `precio_item` INT NOT NULL,
+  `estado_item` VARCHAR(45) NOT NULL,
+	PRIMARY KEY (`resumen_id`));
+END IF;
+
+OPEN cursor1;
+
+FETCH cursor1 INTO _item_id, _precio, _estadoItem;
+ IF _item_id IS NOT NULL THEN
+		INSERT INTO `der_challengemeli`.`tbl_resumen_diario` (`fecha`, `id_item`, `precio_item`, `estado_item`) 
+													VALUES ( CURRENT_DATE(  ), _item_id, _precio, _estadoItem);
+     END IF;
+CLOSE cursor1;
+
+END$$
+
+DELIMITER ;
+;
+```
+
 
 6. Desde IT nos comentan que la tabla de Categorías tiene un issue ya que cuando
 generan modificaciones de una categoría se genera un nuevo registro con la misma
