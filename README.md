@@ -37,10 +37,10 @@ SELECT
 	CONCAT(first_name,' ',last_name) as Usuario,
 	birth_date as FechaNacimiento
 FROM
-der_challengemeli.tbl_customer
+	der_challengemeli.tbl_customer
 WHERE
-	Month(birth_date)= Month(sysdate()) and
-	Day(birth_date)= Day(sysdate());
+	Month(birth_date)= Month(CURRENT_DATE()) and
+	Day(birth_date)= Day(CURRENT_DATE());
 ```
 5. Por día se necesita, cantidad de ventas realizadas, cantidad de productos vendidos
 y monto total transaccionado para el mes de Enero del 2020.
@@ -49,7 +49,7 @@ SELECT
 	COUNT(order_id) as CantidadVentas,
 	COUNT(item_id_fk) as ProductosVendidos,
 	SUM(total_price) as MontoTotal,
-	order_date as FechaVenta
+	date_format(order_date,'Y% M% D%') as FechaVenta
 FROM
 	der_challengemeli.tbl_order
 Where
@@ -63,22 +63,22 @@ categoría Celulares. Se requiere el mes y año de análisis, nombre y apellido 
 vendedor, la cantidad vendida y el monto total transaccionado.
 ```
 SELECT 
-SUM(t_order.total_price) as Venta,
-COUNT(t_order.order_id) as CantidadVentas,
-Customer.first_name as NombreUsuario,
-Customer.last_name as ApellidoUsuario,
-Month(t_order.order_date) as Mes,
-Year(t_order.order_date) as Año
+	SUM(t_order.total_price) as Venta,
+	COUNT(t_order.order_id) as CantidadVentas,
+	Customer.first_name as NombreUsuario,
+	Customer.last_name as ApellidoUsuario,
+	Month(t_order.order_date) as Mes,
+	Year(t_order.order_date) as Año
 FROM
-der_challengemeli.tbl_order as t_order
-LEFT JOIN der_challengemeli.tbl_item as Item on Item.item_id=t_order.item_id_fk
-LEFT JOIN der_challengemeli.tbl_category as Category on Category.category_id=Item.category_id_fk
-LEFT JOIN der_challengemeli.tbl_customer as Customer on t_order.buyer_customer_id_fk=Customer.customer_id
+	der_challengemeli.tbl_order as t_order
+	LEFT JOIN der_challengemeli.tbl_item as Item on Item.item_id=t_order.item_id_fk
+	LEFT JOIN der_challengemeli.tbl_category as Category on Category.category_id=Item.category_id_fk
+	LEFT JOIN der_challengemeli.tbl_customer as Customer on t_order.buyer_customer_id_fk=Customer.customer_id
 WHERE
-Year(t_order.order_date)= '2019' and
-Category.name = 'Celulares'
+	Year(t_order.order_date)= '2019' and
+	Category.name = 'Celulares'
 GROUP BY
-Customer.first_name,Customer.last_name,t_order.order_date
+	Customer.first_name,Customer.last_name,t_order.order_date
 Order by Venta
 LIMIT 5;
 ```
@@ -92,32 +92,32 @@ comportamiento de los diferentes Items (por ejemplo evolución de Precios,
 cantidad de Items activos).
 ```
 USE `der_challengemeli`;
-DROP procedure IF EXISTS `SP_CreateTable`;
+	DROP procedure IF EXISTS `SP_CreateTable`;
 
 USE `der_challengemeli`;
-DROP procedure IF EXISTS `der_challengemeli`.`SP_CreateTable`;
+	DROP procedure IF EXISTS `der_challengemeli`.`SP_CreateTable`;
 ;
 
 DELIMITER $$
 USE `der_challengemeli`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `SP_CreateTable`()
 BEGIN
-DECLARE _item_id  INT(11);
-DECLARE _precio  INT(11);
-DECLARE _estadoItem  varchar(100);
+	DECLARE _item_id  INT(11);
+	DECLARE _precio  INT(11);
+	DECLARE _estadoItem  varchar(100);
+	DECLARE cursor1 CURSOR FOR
+	SELECT 
+	Item.item_id as c_item, Item.price as c_precio, PublishStatus.name as c_estadoItem
+	FROM tbl_item as Item
+	LEFT JOIN tbl_publish_status as PublishStatus on PublishStatus.publish_status_id= Item.publish_status_fk;
 
-DECLARE cursor1 CURSOR FOR
-SELECT 
-Item.item_id as c_item, Item.price as c_precio, PublishStatus.name as c_estadoItem
-FROM tbl_item as Item
-LEFT JOIN tbl_publish_status as PublishStatus on PublishStatus.publish_status_id= Item.publish_status_fk
-;
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'tbl_resumen_diario') THEN
- CREATE TABLE `der_challengemeli`.`tbl_resumen_diario` (
-  `resumen_id` INT NOT NULL,
-  `fecha` date NOT NULL,
-  `id_item` INT NOT NULL,
-  `precio_item` INT NOT NULL,
+CREATE TABLE `der_challengemeli`.`tbl_resumen_diario` (
+`resumen_id` INT NOT NULL,
+`fecha` date NOT NULL,
+`id_item` INT NOT NULL,
+
+`precio_item` INT NOT NULL,
   `estado_item` VARCHAR(45) NOT NULL,
 	PRIMARY KEY (`resumen_id`));
 END IF;
@@ -125,9 +125,10 @@ END IF;
 OPEN cursor1;
 
 FETCH cursor1 INTO _item_id, _precio, _estadoItem;
- IF _item_id IS NOT NULL THEN
+
+IF _item_id IS NOT NULL THEN
 		INSERT INTO `der_challengemeli`.`tbl_resumen_diario` (`fecha`, `id_item`, `precio_item`, `estado_item`) 
-													VALUES ( CURRENT_DATE(  ), _item_id, _precio, _estadoItem);
+													VALUES ( CURRENT_DATE(), _item_id, _precio, _estadoItem);
      END IF;
 CLOSE cursor1;
 
