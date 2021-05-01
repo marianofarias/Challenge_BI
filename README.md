@@ -27,7 +27,7 @@ Use la herramienta MySql Workbrench ya que es gratuita y me parece muy completa.
 SELECT
 	COUNT(*)
 FROM
-	der_challengemeli.tbl_customer
+	challenge_bi.tbl_customer
 WHERE
 	last_name like 'M%';
 ```
@@ -37,7 +37,7 @@ SELECT
 	CONCAT(first_name,' ',last_name) as Usuario,
 	birth_date as FechaNacimiento
 FROM
-	der_challengemeli.tbl_customer
+	challenge_bi.tbl_customer
 WHERE
 	Month(birth_date)= Month(CURRENT_DATE()) and
 	Day(birth_date)= Day(CURRENT_DATE());
@@ -51,7 +51,7 @@ SELECT
 	SUM(total_price) as MontoTotal,
 	date_format(order_date,'Y% M% D%') as FechaVenta
 FROM
-	der_challengemeli.tbl_order
+	challenge_bi.tbl_order
 Where
 	Month(order_date)= 1 and
 	Year(order_date)= 2020 and
@@ -70,10 +70,10 @@ SELECT
 	Month(t_order.order_date) as Mes,
 	Year(t_order.order_date) as Año
 FROM
-	der_challengemeli.tbl_order as t_order
-	LEFT JOIN der_challengemeli.tbl_item as Item on Item.item_id=t_order.item_id_fk
-	LEFT JOIN der_challengemeli.tbl_category as Category on Category.category_id=Item.category_id_fk
-	LEFT JOIN der_challengemeli.tbl_customer as Customer on t_order.buyer_customer_id_fk=Customer.customer_id
+	challenge_bi.tbl_order as t_order
+	LEFT JOIN challenge_bi.tbl_item as Item on Item.item_id=t_order.item_id_fk
+	LEFT JOIN challenge_bi.tbl_category as Category on Category.category_id=Item.category_id_fk
+	LEFT JOIN challenge_bi.tbl_customer as Customer on t_order.buyer_customer_id_fk=Customer.customer_id
 WHERE
 	Year(t_order.order_date)= '2019' and
 	Category.name = 'Celulares'
@@ -91,15 +91,15 @@ informado por la PK definida
 comportamiento de los diferentes Items (por ejemplo evolución de Precios,
 cantidad de Items activos).
 ```
-USE `der_challengemeli`;
+USE `challenge_bi`;
 	DROP procedure IF EXISTS `SP_CreateTable`;
 
-USE `der_challengemeli`;
-	DROP procedure IF EXISTS `der_challengemeli`.`SP_CreateTable`;
+USE `challenge_bi`;
+	DROP procedure IF EXISTS `challenge_bi`.`SP_CreateTable`;
 ;
 
 DELIMITER $$
-USE `der_challengemeli`$$
+USE `challenge_bi`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `SP_CreateTable`()
 BEGIN
 	DECLARE _item_id  INT(11);
@@ -112,7 +112,7 @@ BEGIN
 	LEFT JOIN tbl_publish_status as PublishStatus on PublishStatus.publish_status_id= Item.publish_status_fk;
 
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'tbl_resumen_diario') THEN
-	CREATE TABLE `der_challengemeli`.`tbl_resumen_diario` (
+	CREATE TABLE `challenge_bi`.`tbl_resumen_diario` (
 		`resumen_id` INT NOT NULL,
 		`fecha` date NOT NULL,
 		`id_item` INT NOT NULL,
@@ -125,7 +125,7 @@ END IF;
 OPEN cursor1;
 	FETCH cursor1 INTO _item_id, _precio, _estadoItem;
 	IF _item_id IS NOT NULL THEN
-		INSERT INTO `der_challengemeli`.`tbl_resumen_diario` 
+		INSERT INTO `challenge_bi`.`tbl_resumen_diario` 
 			(`fecha`, `id_item`, `precio_item`, `estado_item`)
 			VALUES ( CURRENT_DATE(), _item_id, _precio, _estadoItem);
 	END IF;
