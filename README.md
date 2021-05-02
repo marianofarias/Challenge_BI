@@ -93,6 +93,7 @@ informado por la PK definida
 comportamiento de los diferentes Items (por ejemplo evolución de Precios,
 cantidad de Items activos).
 ```
+DELIMITER $$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `SP_CreateTable`()
 BEGIN
 	DECLARE fin INTEGER DEFAULT 0;
@@ -110,13 +111,14 @@ BEGIN
 
 	IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'tbl_resumen_diario') THEN
 		CREATE TABLE `challenge_bi`.`tbl_resumen_diario` (
-			`resumen_id` 	INT(11) NOT NULL,
+			`resumen_id` 	INT(11) NOT NULL AUTO_INCREMENT,
 			`fecha` 		date NOT NULL,
 			`id_item` 		INT(11) NOT NULL,
 			`precio_item` 	decimal(10,2) NOT NULL,
 			`estado_item` 	VARCHAR(100) NOT NULL,
 			PRIMARY KEY (`resumen_id`));
 	END IF;
+
 
 	OPEN cursor1;
      get_item: LOOP
@@ -130,7 +132,8 @@ BEGIN
 		END IF;
         END LOOP get_item;
 	CLOSE cursor1;
-END
+END$$
+DELIMITER ;
 ```
 
 
@@ -141,6 +144,8 @@ columna de Fecha de LastUpdated, se solicita crear una nueva tabla y poblar la
 misma sin ningún tipo de duplicados garantizando la calidad y consistencia de los
 datos.
 ```
+
+DELIMITER $$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `SP_migrarCategory`()
 BEGIN
 	DECLARE fin INTEGER DEFAULT 0;
@@ -204,13 +209,9 @@ OPEN cursor1;
     DROP TABLE `challenge_bi`.`tbl_category`;    
     ALTER TABLE `challenge_bi`.`tbl_category_temp` 
 	RENAME TO  `challenge_bi`.`tbl_category` ;
+        
     
- 
-    /*
-    ALTER TABLE `tbl_item`
-	 ADD CONSTRAINT `fk_tbl_item_tbl_category` 	FOREIGN KEY (`category_id_fk`) 				REFERENCES `tbl_category` (`category_id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
-	*/
-    
-END
+END$$
+DELIMITER ;
 ```
 
