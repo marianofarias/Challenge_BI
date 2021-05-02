@@ -6,11 +6,13 @@ Se uso **MySQL**, que es una base de datos relacional con licencia gratuita. En 
 
 #### Entregables:
 
-- [DER](https://www.google.com/)
+- [DER](https://github.com/marianofarias/Challenge_BI/blob/main/DER.png)
 
-- [DDL](https://www.google.com/)
+- [create_tables](https://github.com/marianofarias/Challenge_BI/blob/main/create_tables.sql)
 
-- [Querys](https://www.google.com/)
+- [datos_ejemplo](https://github.com/marianofarias/Challenge_BI/blob/main/datos_ejemplo.sql)
+
+- [respuestas_negocio](https://github.com/marianofarias/Challenge_BI/blob/main/respuestas_negocio.sql)
 
 ## DER
 
@@ -18,7 +20,8 @@ La primer parte del entregable es la creacion de un DER que va a servir para pod
 Use la herramienta MySql Workbrench ya que es gratuita y me parece muy completa.
 
 ### Cosas que me gustaria resaltar:
-  - Agregue una constraint unique del campo "email" en Customer. 
+  - Agregue una constraint unique del campo "email" y "Document_number" en Customer.
+  
 
 ## PREGUNTAS A RESOLVER
 
