@@ -38,7 +38,7 @@ FROM
 WHERE
 	last_name like 'M%';
 ```
-3. Listado de los usuarios que cumplan años en el día de la fecha (hoy).
+2. Listado de los usuarios que cumplan años en el día de la fecha (hoy).
 ```
 SELECT
 	CONCAT(first_name,' ',last_name) as Usuario,
@@ -49,7 +49,7 @@ WHERE
 	Month(birth_date)= Month(CURRENT_DATE()) and
 	Day(birth_date)= Day(CURRENT_DATE());
 ```
-5. Por día se necesita, cantidad de ventas realizadas, cantidad de productos vendidos
+3. Por día se necesita, cantidad de ventas realizadas, cantidad de productos vendidos
 y monto total transaccionado para el mes de Enero del 2020.
 ```
 SELECT
@@ -102,6 +102,8 @@ cantidad de Items activos).
 #### Resolución:
 
 Este Store Procedure, crea (si aún no existe) y llena la tabla tbl_resumen_diario, donde van a estar los campos necesarios para hacer un evolutivo del precio y del estado de los items.
+Está desarrollado para que se ejecute con algún gestor de tareas al finalizar el día para obtener los datos diarios.
+O si se quiere, se puede poner a correr a primera hora del día siguiente, pero habría que incluir en la sentencia del WHERE del cursor1 "WHERE date_created = SUBDATE(CURDATE(),1)" .
 
 Para ejecutarlo:
 ```
