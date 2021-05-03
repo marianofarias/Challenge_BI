@@ -103,6 +103,11 @@ cantidad de Items activos).
 
 Este Store Procedure, crea (si aún no existe) y llena la tabla tbl_resumen_diario, donde van a estar los campos necesarios para hacer un evolutivo del precio y del estado de los items.
 
+Para ejecutarlo:
+```
+CALL `challenge_bi`.`SP_CreateTable`();
+```
+Codigo:
 ```
 DELIMITER $$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `SP_CreateTable`()
@@ -173,6 +178,11 @@ UPDATE `challenge_bi`.`tbl_category` SET `category_id` = '1' WHERE (`category_id
 ```
 
 Ahora si podemos utilizar el SP.
+Para ejecutarlo:
+```
+CALL `challenge_bi`.`SP_migrarCategory`();
+```
+Codigo:
 ```
 DELIMITER $$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `SP_migrarCategory`()
