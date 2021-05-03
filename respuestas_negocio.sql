@@ -174,6 +174,7 @@ END IF;
 	ALTER TABLE `tbl_category_temp`
 		ADD PRIMARY KEY (`category_id`);
 -- RECORRO EL CURSOR DE DUPLICADOS E INSERTO LOS REGISTROS YA LIMPIOS EN LA TABLA TEMPORAL
+
 OPEN cursor_id_duplicadas;
   get_category: LOOP
 		FETCH cursor_id_duplicadas INTO _category_id, _name, _pather_category_id, _is_pather, _permalink, _tags, _description, _path, _last_updated, _date_created;
@@ -187,18 +188,19 @@ OPEN cursor_id_duplicadas;
          END LOOP get_category;
 
 	CLOSE cursor_id_duplicadas;
+set fin:=0;
 -- RECORRO EL CURSOR DE LOS NO DUPLICADOS E INSERTO LOS REGISTROS YA LIMPIOS EN LA TABLA TEMPORAL
 OPEN cursor_id_No_duplicadas;
-  get_category: LOOP
+  get2_category: LOOP
 		FETCH cursor_id_No_duplicadas INTO _category_id, _name, _pather_category_id, _is_pather, _permalink, _tags, _description, _path, _last_updated, _date_created;
 		IF fin = 1 THEN
-			LEAVE get_category;
+			LEAVE get2_category;
 		END IF;	
 			IF _category_id IS NOT NULL THEN
 				INSERT INTO `challenge_bi`.`tbl_category_temp` 		(`category_id`,`name`,`pather_category_id`,`is_pather`,`permalink`,`tags`,`description`,`path`,`last_updated`,`date_created`) 
 												VALUES 	(_category_id, _name, _pather_category_id, _is_pather, _permalink, _tags, _description, _path, _last_updated, _date_created) ;
 			END IF;
-         END LOOP get_category;
+         END LOOP get2_category;
 
 	CLOSE cursor_id_No_duplicadas;
 	
