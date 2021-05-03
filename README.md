@@ -17,11 +17,15 @@ Se uso **MySQL**, que es una base de datos relacional con licencia gratuita. En 
 ## DER
 
 La primer parte del entregable es la creacion de un DER que va a servir para poder responder a preguntas, sobre diferentes casos en el negocio, que fueron enunciadas.
-Use la herramienta MySql Workbrench ya que es gratuita y me parece muy completa.
+Use la herramienta MySql Workbrench ya que es gratuita y me parece bastane completa.
 
-### Cosas que me gustaria resaltar:
-  - Agregue una constraint unique del campo "email" y "Document_number" en Customer.
-  
+## CREATE TABLES
+
+El archivo que se entrega, contiene todas las instrucciones para que se creen las tablas que forman parte del modelo.
+
+## DATOS DE EJEMPLO
+
+Envio un lote de datos de ejemplo como para validar el proximo punto.
 
 ## PREGUNTAS A RESOLVER
 
@@ -48,7 +52,6 @@ WHERE
 5. Por día se necesita, cantidad de ventas realizadas, cantidad de productos vendidos
 y monto total transaccionado para el mes de Enero del 2020.
 ```
-
 SELECT
 	COUNT(order_id) as CantidadVentas,
 	COUNT(item_id) as ProductosVendidos,
@@ -60,7 +63,7 @@ FROM
 Where
 	Month(order_date)= 1 and
 	Year(order_date)= 2020 and
-	status_id_fk = 1 
+	status_id_fk = 1 -- ESTADO DE ORDER "Confirmed".
  GROUP BY order_date;
  ```
 4. Por cada mes del 2019, se solicita el top 5 de usuarios que más vendieron ($) en la
@@ -84,7 +87,7 @@ WHERE
 	Category.name = 'Celulares'
 GROUP BY
 	Customer.first_name,Customer.last_name,t_order.order_date
-Order by Venta
+Order by Venta DESC
 LIMIT 5;
 ```
 
@@ -95,6 +98,11 @@ informado por la PK definida
   - Esta información nos va a permitir realizar análisis para entender el
 comportamiento de los diferentes Items (por ejemplo evolución de Precios,
 cantidad de Items activos).
+
+#### Resolucion:
+
+Este Store Procedure, crea(si aun no existe) y llena la tabla tbl_resumen_diario, donde van a estar los campos necesarios para hacer un evolutivo del precio y del estado de los items.
+
 ```
 DELIMITER $$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `SP_CreateTable`()
@@ -148,8 +156,24 @@ PK en vez de actualizar el ya existente. Teniendo en cuenta que tenemos una
 columna de Fecha de LastUpdated, se solicita crear una nueva tabla y poblar la
 misma sin ningún tipo de duplicados garantizando la calidad y consistencia de los
 datos.
+
+#### Resolucion:
+
+Para poder validar el funcionamiento de este Store Procedure, debemos obligar y romper la integridad del modelo de datos, ya que necesitamos que la tabla tbl_category tenga 2 registros con la misma PK.
+Entonces:
+- Primero debemos eliminar la relacion de ITEM y CATEGORY. Y ademas dejar a la CATEGORY sin PK.
+```
+ALTER TABLE `challenge_bi`.`tbl_item`  DROP FOREIGN KEY `fk_tbl_item_tbl_category`;
+ALTER TABLE `challenge_bi`.`tbl_item` DROP INDEX `fk_tbl_item_tbl_category` ;
+ALTER TABLE `challenge_bi`.`tbl_category` DROP PRIMARY KEY; 
+```
+ -Si usamos el set de datos que envie, dejemos un registro con una pk duplicada.
+ ```
+UPDATE `challenge_bi`.`tbl_category` SET `category_id` = '1' WHERE (`category_id` = '2');
 ```
 
+Ahora si podemos utilizar el SP.
+```
 DELIMITER $$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `SP_migrarCategory`()
 BEGIN
