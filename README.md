@@ -102,7 +102,9 @@ cantidad de Items activos).
 #### Resolución:
 
 Este Store Procedure, crea (si aún no existe) y llena la tabla tbl_resumen_diario, donde van a estar los campos necesarios para hacer un evolutivo del precio y del estado de los items.
+
 Está desarrollado para que se ejecute con algún gestor de tareas al finalizar el día para obtener los datos diarios.
+
 O si se quiere, se puede poner a correr a primera hora del día siguiente, pero habría que incluir en la sentencia del WHERE del cursor1 "WHERE date_created = SUBDATE(CURDATE(),1)" .
 
 Para ejecutarlo:
