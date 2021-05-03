@@ -25,7 +25,7 @@ El archivo que se entrega, contiene todas las instrucciones para que se creen la
 
 ## DATOS DE EJEMPLO
 
-Envió un lote de datos de ejemplo como para validar el próximo punto.
+Envío un lote de datos de ejemplo como para validar el próximo punto.
 
 ## PREGUNTAS A RESOLVER
 
