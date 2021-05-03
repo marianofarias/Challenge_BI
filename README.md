@@ -99,19 +99,21 @@ cantidad de Items activos).
 DELIMITER $$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `SP_CreateTable`()
 BEGIN
+-- DECLARO VARIABLES
 	DECLARE fin INTEGER DEFAULT 0;
 	DECLARE _item_id  		INT(11);
 	DECLARE _precio  		decimal(10,2);
 	DECLARE _estadoItem  	varchar(100);
-
+	-- CREO EL CURSOR CON LOS CAMPOS QUE VAMOS A NECESITAR
 	DECLARE cursor1 CURSOR FOR
-	SELECT 
-		Item.item_id as c_item, Item.unit_price as c_precio, PublishStatus.name as c_estadoItem
-	FROM 
-		tbl_item as Item
-		LEFT JOIN tbl_publish_status as PublishStatus on PublishStatus.publish_status_id= Item.publish_status_fk;
+		SELECT 
+			Item.item_id as c_item, Item.unit_price as c_precio, PublishStatus.name as c_estadoItem
+		FROM 
+			tbl_item as Item
+			LEFT JOIN tbl_publish_status as PublishStatus on PublishStatus.publish_status_id= Item.publish_status_fk;
 	  DECLARE CONTINUE HANDLER FOR NOT FOUND SET fin=1;
-
+	
+	-- SI LA TABLA tbl_resumen_diario, NO EXISTE, LA CREO.
 	IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'tbl_resumen_diario') THEN
 		CREATE TABLE `challenge_bi`.`tbl_resumen_diario` (
 			`resumen_id` 	INT(11) NOT NULL AUTO_INCREMENT,
@@ -122,18 +124,18 @@ BEGIN
 			PRIMARY KEY (`resumen_id`));
 	END IF;
 
-
+	-- RECORRO EL CURSOR E INSERTO LOS REGISTROS EN LA NUEVA TABLA
 	OPEN cursor1;
-     get_item: LOOP
+     		get_item: LOOP
 		FETCH cursor1 INTO _item_id, _precio, _estadoItem;
-        IF fin = 1 THEN
+        	IF fin = 1 THEN
 			LEAVE get_item;
 		END IF;	
 		IF _item_id IS NOT NULL THEN
 			INSERT INTO `challenge_bi`.`tbl_resumen_diario` (`fecha`, `id_item`, `precio_item`, `estado_item`) 
 				 VALUES ( CURRENT_DATE(  ), _item_id, _precio, _estadoItem);
 		END IF;
-        END LOOP get_item;
+        	END LOOP get_item;
 	CLOSE cursor1;
 END$$
 DELIMITER ;
@@ -151,6 +153,7 @@ datos.
 DELIMITER $$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `SP_migrarCategory`()
 BEGIN
+-- DECLARACION DE VARIABLES
 	DECLARE fin INTEGER DEFAULT 0;
 	DECLARE _category_id 			int(11);
 	DECLARE _name 					varchar(100);
@@ -162,20 +165,32 @@ BEGIN
 	DECLARE _path 					varchar(100);
 	DECLARE _last_updated 			datetime;
 	DECLARE _date_created 			datetime;
+	-- CREO UN CURSOR CON LOS REGISTROS DUPLICADOS, TOMANDO EL QUE TIENE MAXIMA FECHA DE ACTUALIZACION
+	DECLARE cursor_id_duplicadas CURSOR FOR
+		SELECT TableA.* FROM 
+		(
+			SELECT category_id, Max(last_updated) as Maxlast_updated 
+			FROM challenge_bi.tbl_category as state_id
+			GROUP BY category_id
+			HAVING Count(*)>1
+		) TableB
+		INNER JOIN challenge_bi.tbl_category as TableA
+		ON TableA.category_id=TableB.category_id AND TableA.last_updated=TableB.Maxlast_updated;
+	-- CREO UN CURSOR CON LOS REGISTROS QUE NO ESTAN DUPLICADOS.
+	DECLARE cursor_id_No_duplicadas CURSOR FOR
+		SELECT TableA.* FROM 
+		(
+			SELECT category_id, Max(last_updated) as Maxlast_updated 
+			FROM challenge_bi.tbl_category as state_id
+			GROUP BY category_id
+			HAVING Count(*)=1
+		) TableB
+		INNER JOIN challenge_bi.tbl_category as TableA
+		ON TableA.category_id=TableB.category_id AND TableA.last_updated=TableB.Maxlast_updated;
+	 DECLARE CONTINUE HANDLER FOR NOT FOUND SET fin=1;
 
-DECLARE cursor1 CURSOR FOR
-	SELECT TableA.* FROM 
-	(
-		SELECT category_id, Max(last_updated) as Maxlast_updated 
-		FROM challenge_bi.tbl_category as state_id
-		GROUP BY category_id
-		HAVING Count(*)>1
-	) TableB
-	INNER JOIN challenge_bi.tbl_category as TableA
-	ON TableA.category_id=TableB.category_id AND TableA.last_updated=TableB.Maxlast_updated;
-  DECLARE CONTINUE HANDLER FOR NOT FOUND SET fin=1;
-
-
+-- CREO UNA TABLA TEMPORAL. SI EXISTE, PRIMERO LA BORRO.
+-- ESTA TABLA TEMPORAL YA VA A TENER UNA PK, POR LO TANTO NO VA A PERMITIR DUPLICIDAD EN EL ID
 IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'tbl_category_temp') THEN
 	DROP TABLE `challenge_bi`.`tbl_category_temp`;
 END IF;
@@ -194,10 +209,10 @@ END IF;
 	) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 	ALTER TABLE `tbl_category_temp`
 		ADD PRIMARY KEY (`category_id`);
-	
-OPEN cursor1;
+-- RECORRO EL CURSOR DE DUPLICADOS E INSERTO LOS REGISTROS YA LIMPIOS EN LA TABLA TEMPORAL
+OPEN cursor_id_duplicadas;
   get_category: LOOP
-		FETCH cursor1 INTO _category_id, _name, _pather_category_id, _is_pather, _permalink, _tags, _description, _path, _last_updated, _date_created;
+		FETCH cursor_id_duplicadas INTO _category_id, _name, _pather_category_id, _is_pather, _permalink, _tags, _description, _path, _last_updated, _date_created;
 		IF fin = 1 THEN
 			LEAVE get_category;
 		END IF;	
@@ -207,9 +222,25 @@ OPEN cursor1;
 			END IF;
          END LOOP get_category;
 
-	CLOSE cursor1;
+	CLOSE cursor_id_duplicadas;
+-- RECORRO EL CURSOR DE LOS NO DUPLICADOS E INSERTO LOS REGISTROS YA LIMPIOS EN LA TABLA TEMPORAL
+OPEN cursor_id_No_duplicadas;
+  get_category: LOOP
+		FETCH cursor_id_No_duplicadas INTO _category_id, _name, _pather_category_id, _is_pather, _permalink, _tags, _description, _path, _last_updated, _date_created;
+		IF fin = 1 THEN
+			LEAVE get_category;
+		END IF;	
+			IF _category_id IS NOT NULL THEN
+				INSERT INTO `challenge_bi`.`tbl_category_temp` 		(`category_id`,`name`,`pather_category_id`,`is_pather`,`permalink`,`tags`,`description`,`path`,`last_updated`,`date_created`) 
+												VALUES 	(_category_id, _name, _pather_category_id, _is_pather, _permalink, _tags, _description, _path, _last_updated, _date_created) ;
+			END IF;
+         END LOOP get_category;
+
+	CLOSE cursor_id_No_duplicadas;
 	
-    DROP TABLE `challenge_bi`.`tbl_category`;    
+	-- ELIMINO LA TABLA ORIGINAL
+    DROP TABLE `challenge_bi`.`tbl_category`;  
+	-- RENOMBRO LA ORIGINAL
     ALTER TABLE `challenge_bi`.`tbl_category_temp` 
 	RENAME TO  `challenge_bi`.`tbl_category` ;
         
