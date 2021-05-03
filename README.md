@@ -1,8 +1,8 @@
 # CHALLENGE BI
 
-En el presente repositorio se entrega la resolucion del challenge planteado para la validar aptitudes tecnicas relacionadas con el manejo de SQL.
+En el presente repositorio se entrega la resolución del challenge planteado para la validar aptitudes técnicas relacionadas con el manejo de SQL.
 
-Se uso **MySQL**, que es una base de datos relacional con licencia gratuita. En un momento queria usar PosgresSQL pero no tiene Stored Procedures, sino que en su lugar se usan funciones que actuan de la misma forma, pero no me parecio una buena eleccion.
+Se uso **MySQL**, que es una base de datos relacional con licencia gratuita. En un momento quería usar PosgresSQL pero no tiene Stored Procedures, sino que en su lugar se usan funciones que actúan de la misma forma, pero no me pareció una buena elección.
 
 #### Entregables:
 
@@ -16,8 +16,8 @@ Se uso **MySQL**, que es una base de datos relacional con licencia gratuita. En 
 
 ## DER
 
-La primer parte del entregable es la creacion de un DER que va a servir para poder responder a preguntas, sobre diferentes casos en el negocio, que fueron enunciadas.
-Use la herramienta MySql Workbrench ya que es gratuita y me parece bastane completa.
+La primera parte del entregable es la creación de un DER que va a servir para poder responder a preguntas, sobre diferentes casos en el negocio, que fueron enunciadas.
+Use la herramienta MySql Workbrench ya que es gratuita y me parece bastante completa.
 
 ## CREATE TABLES
 
@@ -25,7 +25,7 @@ El archivo que se entrega, contiene todas las instrucciones para que se creen la
 
 ## DATOS DE EJEMPLO
 
-Envio un lote de datos de ejemplo como para validar el proximo punto.
+Envió un lote de datos de ejemplo como para validar el próximo punto.
 
 ## PREGUNTAS A RESOLVER
 
@@ -99,9 +99,9 @@ informado por la PK definida
 comportamiento de los diferentes Items (por ejemplo evolución de Precios,
 cantidad de Items activos).
 
-#### Resolucion:
+#### Resolución:
 
-Este Store Procedure, crea(si aun no existe) y llena la tabla tbl_resumen_diario, donde van a estar los campos necesarios para hacer un evolutivo del precio y del estado de los items.
+Este Store Procedure, crea (si aún no existe) y llena la tabla tbl_resumen_diario, donde van a estar los campos necesarios para hacer un evolutivo del precio y del estado de los items.
 
 ```
 DELIMITER $$
@@ -157,11 +157,11 @@ columna de Fecha de LastUpdated, se solicita crear una nueva tabla y poblar la
 misma sin ningún tipo de duplicados garantizando la calidad y consistencia de los
 datos.
 
-#### Resolucion:
+#### Resolución:
 
 Para poder validar el funcionamiento de este Store Procedure, debemos obligar y romper la integridad del modelo de datos, ya que necesitamos que la tabla tbl_category tenga 2 registros con la misma PK.
 Entonces:
-- Primero debemos eliminar la relacion de ITEM y CATEGORY. Y ademas dejar a la CATEGORY sin PK.
+- Primero debemos eliminar la relación de ITEM y CATEGORY. Y además dejar a la CATEGORY sin PK.
 ```
 ALTER TABLE `challenge_bi`.`tbl_item`  DROP FOREIGN KEY `fk_tbl_item_tbl_category`;
 ALTER TABLE `challenge_bi`.`tbl_item` DROP INDEX `fk_tbl_item_tbl_category` ;
