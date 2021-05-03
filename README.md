@@ -176,12 +176,13 @@ ALTER TABLE `challenge_bi`.`tbl_item`  DROP FOREIGN KEY `fk_tbl_item_tbl_categor
 ALTER TABLE `challenge_bi`.`tbl_item` DROP INDEX `fk_tbl_item_tbl_category` ;
 ALTER TABLE `challenge_bi`.`tbl_category` DROP PRIMARY KEY; 
 ```
- -Si usamos el set de datos que envie, dejemos un registro con una pk duplicada.
+ - Si usamos el set de datos que envie, dejemos un registro con una pk duplicada.
  ```
 UPDATE `challenge_bi`.`tbl_category` SET `category_id` = '1' WHERE (`category_id` = '2');
 ```
 
 Ahora si podemos utilizar el SP.
+
 Para ejecutarlo:
 ```
 CALL `challenge_bi`.`SP_migrarCategory`();
