@@ -136,8 +136,8 @@ BEGIN
 	IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'tbl_resumen_diario') THEN
 		CREATE TABLE `challenge_bi`.`tbl_resumen_diario` (
 			`resumen_id` 	INT(11) NOT NULL AUTO_INCREMENT,
-			`fecha` 		date NOT NULL,
-			`id_item` 		INT(11) NOT NULL,
+			`fecha` 	date NOT NULL,
+			`id_item` 	INT(11) NOT NULL,
 			`precio_item` 	decimal(10,2) NOT NULL,
 			`estado_item` 	VARCHAR(100) NOT NULL,
 			PRIMARY KEY (`resumen_id`));
@@ -248,13 +248,13 @@ END IF;
 	DROP TABLE IF EXISTS `tbl_category_temp`;
 	CREATE TABLE `tbl_category_temp` (
 	  `category_id` 		int(11) NOT NULL,
-	  `name` 				varchar(100) DEFAULT NULL,
-	  `pather_category_id` 	int(11) NOT NULL,
+	  `name` 			varchar(100) DEFAULT NULL,
+	  `pather_category_id` 		int(11) NOT NULL,
 	  `is_pather` 			int(1) NOT NULL,
 	  `permalink` 			varchar(100) DEFAULT NULL,
-	  `tags` 				varchar(100) DEFAULT NULL,
+	  `tags` 			varchar(100) DEFAULT NULL,
 	  `description` 		varchar(100) DEFAULT NULL,
-	  `path` 				varchar(100) DEFAULT NULL,
+	  `path` 			varchar(100) DEFAULT NULL,
 	  `last_updated` 		datetime NOT NULL,
 	  `date_created` 		datetime DEFAULT NULL
 	) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
