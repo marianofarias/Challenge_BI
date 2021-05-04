@@ -169,6 +169,7 @@ datos.
 #### Resolución:
 
 Para poder validar el funcionamiento de este Store Procedure, debemos obligar y romper la integridad del modelo de datos, ya que necesitamos que la tabla tbl_category tenga 2 registros con la misma PK.
+
 Entonces:
 - Primero debemos eliminar la relación de ITEM y CATEGORY. Y además dejar a la CATEGORY sin PK.
 ```
