@@ -41,8 +41,8 @@ WHERE
 2. Listado de los usuarios que cumplan años en el día de la fecha (hoy).
 ```
 SELECT
-	CONCAT(first_name,' ',last_name) as Usuario,
-	birth_date as FechaNacimiento
+	CONCAT(first_name,' ',last_name) 	as Usuario,
+	birth_date 				as FechaNacimiento
 FROM
 	challenge_bi.tbl_customer
 WHERE
@@ -53,13 +53,13 @@ WHERE
 y monto total transaccionado para el mes de Enero del 2020.
 ```
 SELECT
-	COUNT(order_id) as CantidadVentas,
-	COUNT(item_id) as ProductosVendidos,
-	SUM(total_price) as MontoTotal,
-	order_date as FechaVenta
+	COUNT(order_id) 	as CantidadVentas,
+	COUNT(item_id) 		as ProductosVendidos,
+	SUM(total_price) 	as MontoTotal,
+	order_date 		as FechaVenta
 FROM
 	challenge_bi.tbl_order 
-    LEFT JOIN challenge_bi.tbl_item on tbl_item.order_id_fk=tbl_order.order_id
+    	LEFT JOIN challenge_bi.tbl_item on tbl_item.order_id_fk=tbl_order.order_id
 Where
 	Month(order_date)= 1 and
 	Year(order_date)= 2020 and
@@ -71,12 +71,12 @@ categoría Celulares. Se requiere el mes y año de análisis, nombre y apellido 
 vendedor, la cantidad vendida y el monto total transaccionado.
 ```
 SELECT 
-	SUM(t_order.total_price) as Venta,
-	COUNT(t_order.order_id) as CantidadVentas,
-	Customer.first_name as NombreUsuario,
-	Customer.last_name as ApellidoUsuario,
-	Month(t_order.order_date) as Mes,
-	Year(t_order.order_date) as Año
+	SUM(t_order.total_price) 	as Venta,
+	COUNT(t_order.order_id) 	as CantidadVentas,
+	Customer.first_name 		as NombreUsuario,
+	Customer.last_name 		as ApellidoUsuario,
+	Month(t_order.order_date) 	as Mes,
+	Year(t_order.order_date) 	as Año
 FROM
 	challenge_bi.tbl_order as t_order
 	LEFT JOIN challenge_bi.tbl_item as Item on Item.order_id_fk=t_order.order_id
@@ -86,7 +86,7 @@ WHERE
 	Year(t_order.order_date)= '2019' and
 	Category.name = 'Celulares'
 GROUP BY
-	Customer.first_name,Customer.last_name,t_order.order_date
+	Customer.first_name,Customer.last_name,Mes,Año
 Order by Venta DESC
 LIMIT 5;
 ```
